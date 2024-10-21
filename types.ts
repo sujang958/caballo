@@ -35,3 +35,5 @@ export const INITIAL_BOARD: Board = [
   ["P", "P", "P", "P", "P", "P", "P", "P"],
   ["R", "N", "B", "Q", "K", "B", "N", "R"],
 ]
+
+export type Turn = "WHITE" | "BLACK"

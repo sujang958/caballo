@@ -1,19 +1,11 @@
-import type { Board } from "./types.ts"
+import { FEN } from "./formats.ts"
+import type { Board, Turn } from "./types.ts"
 
 class Chess {
-  _position: string
-
-  get position() {
-    return this._position
-  }
-
-  set position(position: string) {
-    // TODO: add validating fen
-    this._position = position
-  }
+  public position: FEN
 
   get board(): Board {
-    const rows = this._position.split("/")
+    const rows = this.position.split("/")
     rows[7] = rows[7].split(" ")[0]
 
     return rows.map((square) =>
@@ -23,9 +15,23 @@ class Chess {
     ) as Board
   }
 
+  get turn(): Turn {
+    return this.position.turn
+  }
+
   constructor(fen?: string) {
-    this._position =
+    this.position = new FEN(
       fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    )
+  }
+
+  public move(move: { from: string; to: string }) {
+    const [fromRow, fromColumn] = move.from.split("")
+    const [toRow, toColumn] = move.to.split("")
+
+    const fromPiece = this.board[fromRow.charCodeAt(0) - 97][Number(fromColumn)]
+    const toPiece = this.board[toRow.charCodeAt(0) - 97][Number(toColumn)]
+    
   }
 }
 
