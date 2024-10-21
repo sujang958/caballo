@@ -1,8 +1,34 @@
-export function add(a: number, b: number): number {
-  return a + b;
+import type { Board } from "./types.ts"
+
+class Chess {
+  _position: string
+
+  get position() {
+    return this._position
+  }
+
+  set position(position: string) {
+    // TODO: add validating fen
+    this._position = position
+  }
+
+  get board(): Board {
+    return [
+      ["r", "n", "b", "q", "k", "b", "n", "r"],
+      ["p", "p", "p", "p", "p", "p", "p", "p"],
+      [".", ".", ".", ".", ".", ".", ".", "."],
+      [".", ".", ".", ".", ".", ".", ".", "."],
+      [".", ".", ".", ".", ".", ".", ".", "."],
+      [".", ".", ".", ".", ".", ".", ".", "."],
+      ["P", "P", "P", "P", "P", "P", "P", "P"],
+      ["R", "N", "B", "Q", "K", "B", "N", "R"],
+    ]
+  }
+
+  constructor(fen?: string) {
+    this._position =
+      fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  }
 }
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  console.log("Add 2 + 3 =", add(2, 3));
-}
+export default Chess
