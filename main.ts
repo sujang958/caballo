@@ -13,16 +13,14 @@ class Chess {
   }
 
   get board(): Board {
-    return [
-      ["r", "n", "b", "q", "k", "b", "n", "r"],
-      ["p", "p", "p", "p", "p", "p", "p", "p"],
-      [".", ".", ".", ".", ".", ".", ".", "."],
-      [".", ".", ".", ".", ".", ".", ".", "."],
-      [".", ".", ".", ".", ".", ".", ".", "."],
-      [".", ".", ".", ".", ".", ".", ".", "."],
-      ["P", "P", "P", "P", "P", "P", "P", "P"],
-      ["R", "N", "B", "Q", "K", "B", "N", "R"],
-    ]
+    const rows = this._position.split("/")
+    rows[7] = rows[7].split(" ")[0]
+
+    return rows.map((square) =>
+      isNaN(Number(square))
+        ? square.split("")
+        : ".,".repeat(Number(square)).slice(0, -1).split(",")
+    ) as Board
   }
 
   constructor(fen?: string) {
