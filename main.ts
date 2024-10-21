@@ -1,11 +1,18 @@
 import { FEN } from "./formats.ts"
-import type { Board, Turn } from "./types.ts"
+import type {
+  Board,
+  File,
+  Promotable,
+  Rank,
+  SquareNotation,
+  Turn,
+} from "./types.ts"
 
 class Chess {
   public position: FEN
 
   get board(): Board {
-    const rows = this.position.split("/")
+    const rows = this.position.fen.split("/")
     rows[7] = rows[7].split(" ")[0]
 
     return rows.map((square) =>
@@ -13,6 +20,10 @@ class Chess {
         ? square.split("")
         : ".,".repeat(Number(square)).slice(0, -1).split(",")
     ) as Board
+  }
+
+  getSquare(square: SquareNotation) {
+    return this.board[8 - rank][file.charCodeAt(0) - 97]
   }
 
   get turn(): Turn {
@@ -25,13 +36,39 @@ class Chess {
     )
   }
 
-  public move(move: { from: string; to: string }) {
-    const [fromRow, fromColumn] = move.from.split("")
-    const [toRow, toColumn] = move.to.split("")
+  isValidSquareNotation(square: string): square is SquareNotation {
+    const [f, r] = square.split("")
+    const file = f.charCodeAt(0)
+    const rank = Number(r)
 
-    const fromPiece = this.board[fromRow.charCodeAt(0) - 97][Number(fromColumn)]
-    const toPiece = this.board[toRow.charCodeAt(0) - 97][Number(toColumn)]
-    
+    if (file < 97 || file > 104) return false
+    if (rank < 1 || rank > 8) return false
+
+    return true
+  }
+
+  public move(_move: { from: string; to: string; promotion?: Promotable }) {
+    if (!this.isValidSquareNotation(_move.from)) return
+    if (!this.isValidSquareNotation(_move.to)) return
+
+    const toPiece = this.getSquare(_move.to)
+    const fromPiece = this.getSquare(_move.from)
+
+    console.log(fromPiece, toPiece, fromColumn, fromRow)
+
+    const isTaking = toPiece != ("." as const)
+    let move = `${fromPiece == "P" ? from[1] : fromPiece}${
+      isTaking ? "x" : ""
+    }${_move.to}`
+
+    if (
+      (toRow == 1 || toRow == 8) &&
+      this.board[fromRow][fromColumn].toUpperCase() == "P" &&
+      _move.promotion
+    )
+      move += `=${_move.promotion}`
+
+    console.log(move)
   }
 }
 
