@@ -1,32 +1,21 @@
-import { FEN } from "./formats.ts"
-import type {
-  Board,
-  File,
-  Promotable,
-  Rank,
-  SquareNotation,
-  Turn,
-} from "./types.ts"
+import { FEN } from "./src/formats.ts"
+import {
+  type Board,
+  type File,
+  type InputMove,
+  type Promotable,
+  type Rank,
+  type SquareNotation,
+  type Color,
+  INITIAL_BOARD,
+} from "./src/types.ts"
 
 class Chess {
   public position: FEN
 
-  get board(): Board {
-    const rows = this.position.fen.split("/")
-    rows[7] = rows[7].split(" ")[0]
+  private board = { ...INITIAL_BOARD }
 
-    return rows.map((square) =>
-      isNaN(Number(square))
-        ? square.split("")
-        : ".,".repeat(Number(square)).slice(0, -1).split(",")
-    ) as Board
-  }
-
-  getSquare(square: SquareNotation) {
-    return this.board[8 - rank][file.charCodeAt(0) - 97]
-  }
-
-  get turn(): Turn {
+  get turn(): Color {
     return this.position.turn
   }
 
@@ -36,7 +25,7 @@ class Chess {
     )
   }
 
-  isValidSquareNotation(square: string): square is SquareNotation {
+  static isValidSquareNotation(square: string): square is SquareNotation {
     const [f, r] = square.split("")
     const file = f.charCodeAt(0)
     const rank = Number(r)
@@ -47,17 +36,16 @@ class Chess {
     return true
   }
 
-  public move(_move: { from: string; to: string; promotion?: Promotable }) {
-    if (!this.isValidSquareNotation(_move.from)) return
-    if (!this.isValidSquareNotation(_move.to)) return
+  public move(_move: InputMove) {
+    if (!Chess.isValidSquareNotation(_move.from)) return
+    if (!Chess.isValidSquareNotation(_move.to)) return
 
-    const toPiece = this.getSquare(_move.to)
-    const fromPiece = this.getSquare(_move.from)
+    const toSquare = this.getSquare(_move.to)
+    const fromSquare = this.getSquare(_move.from)
 
-    console.log(fromPiece, toPiece, fromColumn, fromRow)
+    const isTaking = toSquare.piece != "."
 
-    const isTaking = toPiece != ("." as const)
-    let move = `${fromPiece == "P" ? from[1] : fromPiece}${
+    let move = `${fromSquare.piece == "P" ? from[1] : fromSquare}${
       isTaking ? "x" : ""
     }${_move.to}`
 
@@ -69,6 +57,10 @@ class Chess {
       move += `=${_move.promotion}`
 
     console.log(move)
+  }
+
+  public checkCheck(): Color | null {
+    this.board.find((rank) => rank.findIndex((piece) => piece == "K"))
   }
 }
 
