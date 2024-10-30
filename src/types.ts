@@ -21,7 +21,13 @@ export type Piece =
 
 export type Square = Piece | "."
 
-export type Board = Record<SquareNotation, Square> /*[
+export type Board = Record<SquareNotation, Square>
+export type ReverseBoard = Omit<Record<Square, SquareNotation[]>, "K" | "k"> & {
+  k: SquareNotation
+  K: SquareNotation
+}
+
+/*[
   [Square, Square, Square, Square, Square, Square, Square, Square],
   [Square, Square, Square, Square, Square, Square, Square, Square],
   [Square, Square, Square, Square, Square, Square, Square, Square],
@@ -110,6 +116,55 @@ export const INITIAL_BOARD: Board = {
   h6: ".",
   h7: "p",
   h8: "r",
+}
+
+export const INITIAL_REVERSE_BOARD: ReverseBoard = {
+  "R": ["a1", "h1"],
+  "P": ["a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"],
+  ".": [
+    "a3",
+    "a4",
+    "a5",
+    "a6",
+    "b3",
+    "b4",
+    "b5",
+    "b6",
+    "c3",
+    "c4",
+    "c5",
+    "c6",
+    "d3",
+    "d4",
+    "d5",
+    "d6",
+    "e3",
+    "e4",
+    "e5",
+    "e6",
+    "f3",
+    "f4",
+    "f5",
+    "f6",
+    "g3",
+    "g4",
+    "g5",
+    "g6",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+  ],
+  "p": ["a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"],
+  "r": ["a8", "h8"],
+  "N": ["b1", "g1"],
+  "n": ["b8", "g8"],
+  "B": ["c1", "f1"],
+  "b": ["c8", "f8"],
+  "Q": ["d1"],
+  "q": ["d8"],
+  "K": "e1",
+  "k": "e8",
 }
 
 export type Color = "WHITE" | "BLACK"
