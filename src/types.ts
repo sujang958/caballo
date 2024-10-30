@@ -27,6 +27,20 @@ export type ReverseBoard = Omit<Record<Square, SquareNotation[]>, "K" | "k"> & {
   K: SquareNotation
 }
 
+export type TieReason = ""
+export type DefeatReason = "CHECKMATE"
+
+export type GameOverReason =
+  | "CHECKMATE"
+  | "INSUFFICIENT_MATERIAL"
+  | "THREEFOLD_REPETITION"
+  | "STALEMATE"
+
+export type IsGameOver = { over: false } | {
+  over: true
+  reason: GameOverReason
+}
+
 /*[
   [Square, Square, Square, Square, Square, Square, Square, Square],
   [Square, Square, Square, Square, Square, Square, Square, Square],

@@ -2,16 +2,17 @@ import { FEN } from "./src/formats.ts"
 import {
   type Board,
   type Color,
-  type File,
+  File,
   INITIAL_BOARD,
   INITIAL_REVERSE_BOARD,
   type InputMove,
+  IsGameOver,
   type Promotable,
   type Rank,
   ReverseBoard,
   type SquareNotation,
 } from "./src/types.ts"
-import { boardToReversed } from "./src/utils.ts"
+import { addFile, boardToReversed, isValidSquareNotation } from "./src/utils.ts"
 
 class Chess {
   public position: FEN
@@ -41,20 +42,9 @@ class Chess {
     )
   }
 
-  static isValidSquareNotation(square: string): square is SquareNotation {
-    const [f, r] = square.split("")
-    const file = f.charCodeAt(0)
-    const rank = Number(r)
-
-    if (file < 97 || file > 104) return false
-    if (rank < 1 || rank > 8) return false
-
-    return true
-  }
-
   public move(_move: InputMove) {
-    if (!Chess.isValidSquareNotation(_move.from)) return
-    if (!Chess.isValidSquareNotation(_move.to)) return
+    if (!isValidSquareNotation(_move.from)) return
+    if (!isValidSquareNotation(_move.to)) return
 
     const toSquarePiece = this.board[_move.to]
     const fromSquarePiece = this.board[_move.from]
@@ -75,9 +65,37 @@ class Chess {
     // console.log(move)
   }
 
-  public checkCheck(): Color[] {
-    this.board.find((rank) => rank.findIndex((piece) => piece == "K"))
+  // public isInCheck(): Color[] {
+  //   const blackKingPosition = this.reverseBoard.k
+  //   const whiteKingPosition = this.reverseBoard.K
+  // }
+
+  public _allMoves(square: SquareNotation): SquareNotation[] {
+    const moves: string[] = []
+
+    const squarePiece = this.board[square]
+    if (squarePiece == ".") return []
+
+    if (squarePiece.toUpperCase() == "N") {
+      const s = square.split("")
+      const file = s[0] as File
+      const rank = Number(s[1])
+
+      for (let i = -1; i < 2; i += 2) {
+        moves.push(
+          `${addFile(file, 2 * i)}${rank + 1 * i}`,
+          `${addFile(file, 1 * i)}${rank + 2 * i}`,
+          `${addFile(file, -2 * i)}${rank + 1 * i}`,
+          `${addFile(file, -1 * i)}${rank + 2 * i}`,
+        )
+      }
+    }
+
+    return moves.filter(isValidSquareNotation)
   }
+
+  // public isGameOver(): IsGameOver {
+  // }
 }
 
 export default Chess

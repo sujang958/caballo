@@ -1,5 +1,6 @@
 import type {
   Board,
+  File,
   Move,
   ReverseBoard,
   Square,
@@ -38,4 +39,27 @@ export const boardToReversed = (board: Board): ReverseBoard => {
   })
 
   return reversed
+}
+
+/**
+ * Does not always gurantee that the return value is a valid notation
+ * @param file
+ * @param n
+ * @returns
+ */
+export const addFile = (file: File, n: number) =>
+  String.fromCharCode(file.charCodeAt(0) + n)
+
+export const isValidSquareNotation = (
+  square: string,
+): square is SquareNotation => {
+  const [f, r] = square.split("")
+  const file = f.charCodeAt(0)
+  const rank = Number(r)
+
+  if (isNaN(rank)) return false
+  if (file < 97 || file > 104) return false
+  if (rank < 1 || rank > 8) return false
+
+  return true
 }
