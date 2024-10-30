@@ -1,6 +1,7 @@
 import { FEN } from "./src/formats.ts"
 import {
   type Board,
+  CastlingSymbol,
   type Color,
   File,
   INITIAL_BOARD,
@@ -12,10 +13,17 @@ import {
   ReverseBoard,
   type SquareNotation,
 } from "./src/types.ts"
-import { addFile, boardToReversed, isValidSquareNotation } from "./src/utils.ts"
+import {
+  addFile,
+  boardToReversed,
+  isValidSquareNotation,
+  pieceColor,
+} from "./src/utils.ts"
 
 class Chess {
   public position: FEN
+
+  private moves: string[] = []
 
   private board = new Proxy({ ...INITIAL_BOARD }, {
     set: (target, property, newValue, r) => {
@@ -42,7 +50,9 @@ class Chess {
     )
   }
 
-  public move(_move: InputMove) {
+  public move(_move: InputMove | CastlingSymbol) {
+    if (typeof _move == "string") return // TODO: handle
+
     if (!isValidSquareNotation(_move.from)) return
     if (!isValidSquareNotation(_move.to)) return
 
@@ -70,6 +80,11 @@ class Chess {
   //   const whiteKingPosition = this.reverseBoard.K
   // }
 
+  /**
+   * @private
+   * @param square
+   * @returns
+   */
   public _allMoves(square: SquareNotation): SquareNotation[] {
     const moves: string[] = []
 
@@ -92,6 +107,26 @@ class Chess {
     }
 
     return moves.filter(isValidSquareNotation)
+  }
+
+  public _isLegal(square: SquareNotation, move: SquareNotation) {
+    const fromSquarePiece = this.board[square]
+    const targetSquarePiece = this.board[move]
+
+    if (fromSquarePiece == ".") return false
+    if (targetSquarePiece.toUpperCase() == "K") return false
+
+    // TODO: en passant
+
+    const toSameColor =
+      pieceColor(targetSquarePiece) == pieceColor(fromSquarePiece)
+    const isTaking = !toSameColor && targetSquarePiece != "."
+
+    if (toSameColor) {
+      return false
+    }
+
+    if (isTaking) {}
   }
 
   // public isGameOver(): IsGameOver {

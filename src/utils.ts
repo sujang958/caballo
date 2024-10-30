@@ -1,7 +1,9 @@
 import type {
   Board,
+  Color,
   File,
   Move,
+  Piece,
   ReverseBoard,
   Square,
   SquareNotation,
@@ -63,3 +65,6 @@ export const isValidSquareNotation = (
 
   return true
 }
+
+export const pieceColor = (piece: Square): Color | null =>
+  piece !== "." ? (piece.toLowerCase() == piece ? "BLACK" : "WHITE") : null

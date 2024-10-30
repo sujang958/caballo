@@ -36,6 +36,13 @@ export type GameOverReason =
   | "THREEFOLD_REPETITION"
   | "STALEMATE"
 
+export const KINGSIDE_CASTLING = "O-O"
+export const QUEENSIDE_CASTLING = "O-O-O"
+
+export type CastlingSymbol =
+  | typeof KINGSIDE_CASTLING
+  | typeof QUEENSIDE_CASTLING
+
 export type IsGameOver = { over: false } | {
   over: true
   reason: GameOverReason
