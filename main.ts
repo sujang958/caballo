@@ -25,20 +25,26 @@ class Chess {
 
   private moves: string[] = []
 
-  private board = new Proxy({ ...INITIAL_BOARD }, {
-    set: (target, property, newValue, r) => {
-      this.reverseBoard = new Proxy(
-        boardToReversed({ ...target, [property]: newValue }),
-        { set: () => false },
-      )
-      return Reflect.set(target, property, newValue, r)
-    },
-  })
-  private reverseBoard = new Proxy({ ...INITIAL_REVERSE_BOARD }, {
-    set: () => {
-      return false
-    },
-  })
+  private board = new Proxy(
+    { ...INITIAL_BOARD },
+    {
+      set: (target, property, newValue, r) => {
+        this.reverseBoard = new Proxy(
+          boardToReversed({ ...target, [property]: newValue }),
+          { set: () => false }
+        )
+        return Reflect.set(target, property, newValue, r)
+      },
+    }
+  )
+  private reverseBoard = new Proxy(
+    { ...INITIAL_REVERSE_BOARD },
+    {
+      set: () => {
+        return false
+      },
+    }
+  )
 
   get turn(): Color {
     return this.position.turn
@@ -46,7 +52,7 @@ class Chess {
 
   constructor(fen?: string) {
     this.position = new FEN(
-      fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     )
   }
 
@@ -85,28 +91,41 @@ class Chess {
    * @param square
    * @returns
    */
-  public _allMoves(square: SquareNotation): SquareNotation[] {
-    const moves: string[] = []
+  public _allMoves(square: SquareNotation): Set<SquareNotation> {
+    const moves = new Set<string>()
 
-    const squarePiece = this.board[square]
-    if (squarePiece == ".") return []
+    const squarePiece = this.board[square].toUpperCase()
+    const color = pieceColor(this.board[square])
+    if (squarePiece == ".") return new Set()
 
-    if (squarePiece.toUpperCase() == "N") {
+    if (squarePiece == "N") {
       const s = square.split("")
       const file = s[0] as File
       const rank = Number(s[1])
 
       for (let i = -1; i < 2; i += 2) {
-        moves.push(
-          `${addFile(file, 2 * i)}${rank + 1 * i}`,
-          `${addFile(file, 1 * i)}${rank + 2 * i}`,
-          `${addFile(file, -2 * i)}${rank + 1 * i}`,
-          `${addFile(file, -1 * i)}${rank + 2 * i}`,
-        )
+        moves
+          .add(`${addFile(file, 2 * i)}${rank + 1 * i}`)
+          .add(`${addFile(file, 1 * i)}${rank + 2 * i}`)
+          .add(`${addFile(file, -2 * i)}${rank + 1 * i}`)
+          .add(`${addFile(file, -1 * i)}${rank + 2 * i}`)
       }
+    } else if (squarePiece == "R") {
+      ;`${square} `
+        .repeat(8)
+        .split(" ")
+        .map((square, i) => `${square.at(0)}${i}`)
+        .forEach((v) => moves.add(v))
+      ;`${square} `
+        .repeat(8)
+        .split(" ")
+        .map((square, i) => `${String.fromCharCode(97 + i)}${square.at(1)}`)
+        .forEach((v) => moves.add(v))
     }
 
-    return moves.filter(isValidSquareNotation)
+    moves.delete(square)
+
+    return new Set(moves.values().filter(isValidSquareNotation))
   }
 
   public _isLegal(square: SquareNotation, move: SquareNotation) {
@@ -126,7 +145,8 @@ class Chess {
       return false
     }
 
-    if (isTaking) {}
+    if (isTaking) {
+    }
   }
 
   // public isGameOver(): IsGameOver {

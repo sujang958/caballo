@@ -6,5 +6,5 @@ import { INITIAL_BOARD } from "./src/types.ts";
 Deno.test(function allmovesTest() {
   const chess = new Chess()
 
-  console.log(chess._allMoves("b1"))
+  console.log(chess._allMoves("a1"))
 })
