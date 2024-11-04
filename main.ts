@@ -16,12 +16,19 @@ import {
 import {
   addFile,
   boardToReversed,
+  isCastlingSymbol,
   isValidSquareNotation,
   pieceColor,
 } from "./src/utils.ts"
 
 class Chess {
   public position: FEN
+
+  private _isOver = false
+
+  get isOver() {
+    return this._isOver
+  }
 
   private moves: string[] = []
 
@@ -128,12 +135,27 @@ class Chess {
     return new Set(moves.values().filter(isValidSquareNotation))
   }
 
-  public _isLegal(square: SquareNotation, move: SquareNotation) {
-    const fromSquarePiece = this.board[square]
-    const targetSquarePiece = this.board[move]
+  public _isLegal(move: CastlingSymbol): boolean
+  public _isLegal(
+    square: SquareNotation | CastlingSymbol,
+    to?: SquareNotation
+  ): boolean {
+    if (this._isOver) return false
+    else if (isCastlingSymbol(square) && !to)
+      return false // TODO: _handleCastling
+    else if (isValidSquareNotation(square) && to)
+      return this._handleMove(square, to)
+    else return false
+  }
+
+  public _handleMove(from: SquareNotation, to: SquareNotation): boolean {
+    const fromSquarePiece = this.board[from]
+    const targetSquarePiece = this.board[to]
+    const allMoves = this._allMoves(from)
 
     if (fromSquarePiece == ".") return false
     if (targetSquarePiece.toUpperCase() == "K") return false
+    if (!allMoves.has(to)) return false
 
     // TODO: en passant
 
@@ -141,12 +163,12 @@ class Chess {
       pieceColor(targetSquarePiece) == pieceColor(fromSquarePiece)
     const isTaking = !toSameColor && targetSquarePiece != "."
 
-    if (toSameColor) {
-      return false
-    }
+    if (toSameColor) return false
 
     if (isTaking) {
     }
+
+    return false
   }
 
   // public isGameOver(): IsGameOver {

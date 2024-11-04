@@ -1,5 +1,6 @@
 import type {
   Board,
+  CastlingSymbol,
   Color,
   File,
   Move,
@@ -65,6 +66,9 @@ export const isValidSquareNotation = (
 
   return true
 }
+
+export const isCastlingSymbol = (str: string): str is CastlingSymbol =>
+  str == "O-O" || str == "O-O-O"
 
 export const pieceColor = (piece: Square): Color | null =>
   piece !== "." ? (piece.toLowerCase() == piece ? "BLACK" : "WHITE") : null
